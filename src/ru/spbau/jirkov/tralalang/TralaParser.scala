@@ -13,20 +13,18 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val liter: PackratParser[Expression] = trueLiteral | falseLiteral | real | integer
   lazy val ref = ident ^^ (s => Reference(s))
 
-  lazy val binop: PackratParser[Binary] = expr ~ ("+" | "-" | "*" | "/" | "||" | "&&") ~ expr ^^ {
-    case l ~ op ~ r => op match {
-      case "+" => Plus(l, r)
-      case "-" => Minus(l, r)
-      case "*" => Times(l, r)
-      case "/" => Divide(l, r)
-      case "||" => Or(l, r)
-      case "&&" => And(l, r)
-    }
-  }
+  lazy val sum : PackratParser[Expression] = (sum ~ ("+" ~> fact)) ^^ {case x~y => Plus(x,y)} |
+    (sum ~ ("-" ~> fact)) ^^ {case x~y => Minus(x,y)} | fact
+  lazy val fact: PackratParser[Expression] = (sum ~ ("*" ~> liter)) ^^ {case x~y => Times(x,y)} |
+    (sum ~ ("/" ~> liter)) ^^ {case x~y => Divide(x,y)} | "(" ~> sum <~ ")" | liter | ref
 
-  lazy val expr: PackratParser[Expression] = binop | liter | ref
+
+
+  lazy val expr: PackratParser[Expression] = (expr ~ ("&&" ~> sum)) ^^ {case x~y => And(x,y)} |
+    (expr ~ ("||" ~> sum)) ^^ {case x~y => Or(x,y)} | sum
+
   lazy val assignment: PackratParser[Statement] = (ref ~ ":=" ~ expr) ^^ {
-    case r ~ ":=" ~ e => Assignment(r, e)
+    case varr ~ ":=" ~ exprr => Assignment(varr, exprr)
   }
 
   lazy val statement: PackratParser[Statement] = assignment
