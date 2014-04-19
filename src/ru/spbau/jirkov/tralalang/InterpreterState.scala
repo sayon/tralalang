@@ -17,7 +17,7 @@ class InterpreterState {
 
   sealed case class D(value: Double) extends Value
 
-  sealed case class I(value: Int) extends Value
+  sealed case class I(value: Long) extends Value
 
   sealed case class B(value: Boolean) extends Value
 

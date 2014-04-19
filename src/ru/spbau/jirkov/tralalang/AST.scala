@@ -14,7 +14,7 @@ sealed case class Reference(name: String) extends Expression
 sealed abstract class Literal[T](val value:T) extends Expression
 
 sealed case class DoubleLiteral(v:Double) extends Literal[Double](v)
-sealed case class IntLiteral(v:Integer) extends Literal[Int](v)
+sealed case class IntLiteral(v:Long) extends Literal[Long](v)
 sealed case class StringLiteral(v:String) extends Literal[String](v)
 case object TrueLiteral extends Literal[Boolean](true)
 case object FalseLiteral extends Literal[Boolean](false)
