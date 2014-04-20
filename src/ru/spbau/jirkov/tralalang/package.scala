@@ -4,8 +4,7 @@ package ru.spbau.jirkov
 package object tralalang {
 
   class MultiMethod[A, R](default: => R) {
-    private var handlers: List[PartialFunction[A, R]] = Nil
-
+    protected var handlers: List[PartialFunction[A, R]] = Nil
     def apply(args: A): R = {
       handlers find {
         _.isDefinedAt(args)
@@ -18,5 +17,7 @@ package object tralalang {
       handlers +:= handler
     }
   }
+
+  class MultiMethodWithState[A,R,S](default: => R, val state: S) extends MultiMethod[A,R](default)
 
 }
