@@ -25,6 +25,7 @@ class Interpreter(startNode: AST) {
   Handler defImpl {
     case Assignment(v, e) => val computedValue = Handler(e); Handler.state.setVar(v.name, computedValue); computedValue
     case Sequence(l, r) => Handler(l); Handler(r)
+    case Block(s) => Handler.state.pushContext(); val r = Handler(s); Handler.state.popContext(); r
   }
 
 
@@ -85,6 +86,10 @@ class Interpreter(startNode: AST) {
     }
 
     private val _contexts = mutable.Stack[Context](new Context)
+
+    def pushContext(): Unit = _contexts.push(new Context)
+
+    def popContext(): Unit = _contexts.pop()
 
     def getVar(name: String): Value = {
       _contexts.find(_.get(name) != `_|_`) match {

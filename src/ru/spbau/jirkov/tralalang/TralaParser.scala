@@ -27,9 +27,11 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     case varr ~ exprr => Assignment(varr, exprr)
   }
 
-  lazy val statement: PackratParser[Statement] = assignment
+  lazy val block: PackratParser[Block] = "{" ~> statement <~ "}" ^^ Block
 
-  lazy val statements: PackratParser[Sequence] = statement ~ (";" ~> statement )^^ {
+  lazy val statement: PackratParser[Statement] = block | sequence | assignment
+
+  lazy val sequence: PackratParser[Sequence] = statement ~ (";" ~> statement )^^ {
     case l ~ r => Sequence(l, r)
   }
 

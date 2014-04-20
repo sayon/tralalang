@@ -12,6 +12,12 @@ class ParserTests {
   }
 
   @Test
+  def block() = {
+    implicit val sym = p.statement
+    check("x := 3 + 2; {x := 4}", "Sequence(Assignment(Reference(x),Plus(IntLiteral(3),IntLiteral(2))),Block(Assignment(Reference(x),IntLiteral(4))))")
+  }
+
+  @Test
   def binop() = {
     implicit val sym = p.expr
     check("3 + 2", "Plus(IntLiteral(3),IntLiteral(2))")
