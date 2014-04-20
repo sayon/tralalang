@@ -3,7 +3,6 @@ package ru.spbau.jirkov.tralalang
 import scala.collection.mutable
 
 class Interpreter(startNode: AST) {
-  val state = new InterpreterState
 
   abstract class Value
 
@@ -18,10 +17,10 @@ class Interpreter(startNode: AST) {
   case object U extends Value
 
 
-  object Handler extends MultiMethod[AST, Value]({
+  object Handler extends MultiMethodWithState[AST, Value, InterpreterState]({
     throw new NotImplementedError("Unsupported node type!")
     U
-  })
+  }, new InterpreterState)
 
   Handler defImpl {
     case Assignment(v, e) => val computedValue = Handler(e); state.setVar(v.name, computedValue); computedValue
@@ -34,7 +33,7 @@ class Interpreter(startNode: AST) {
     case DoubleLiteral(i) => D(i)
     case TrueLiteral => B(value = true)
     case FalseLiteral => B(value = false)
-    case Reference(name) => state.getVar(name)
+    case Reference(name) => Handler.state.getVar(name)
   }
 
   Handler defImpl {
@@ -105,6 +104,7 @@ class Interpreter(startNode: AST) {
       _contexts.map(_.vars).flatten.map(_._2.toString).fold("")(_ + _ + "\n").trim
   }
 
+  def state = Handler.state
 
   Handler(startNode)
 }
