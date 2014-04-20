@@ -5,7 +5,7 @@ import Assert._
 class InterpreterTest {
   val parser = new TralaParser
   def launchStatus(program:String) : String = {
-    Interpreter( parser.parseAll(parser.assignment, program).get ).state
+    new Interpreter( parser.parseAll(parser.assignment, program).get ).state.vars
   }
   @Test
   def assignment() {
