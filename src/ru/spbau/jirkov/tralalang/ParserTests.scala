@@ -49,4 +49,10 @@ class ParserTests {
     implicit val sym = p.expr
     check("4 + 3 * 2 + 1", "Plus(Plus(IntLiteral(4),Times(IntLiteral(3),IntLiteral(2))),IntLiteral(1))")
   }
+
+  @Test
+  def functionDef() = {
+    implicit val sym = p.statement
+    check("fun myFun(firstArg, secondArg) { x := 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),null,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
+  }
 }
