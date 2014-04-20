@@ -23,14 +23,14 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val expr: PackratParser[Expression] = (expr ~ ("&&" ~> sum)) ^^ {case x~y => And(x,y)} |
     (expr ~ ("||" ~> sum)) ^^ {case x~y => Or(x,y)} | sum
 
-  lazy val assignment: PackratParser[Statement] = (ref ~ ":=" ~ expr) ^^ {
-    case varr ~ ":=" ~ exprr => Assignment(varr, exprr)
+  lazy val assignment: PackratParser[Statement] = ref ~ (":=" ~> expr) ^^ {
+    case varr ~ exprr => Assignment(varr, exprr)
   }
 
   lazy val statement: PackratParser[Statement] = assignment
 
-  lazy val statements: PackratParser[Sequence] = statement ~ ";" ~ statement ^^ {
-    case l ~ _ ~ r => Sequence(l, r)
+  lazy val statements: PackratParser[Sequence] = statement ~ (";" ~> statement )^^ {
+    case l ~ r => Sequence(l, r)
   }
 
 }
