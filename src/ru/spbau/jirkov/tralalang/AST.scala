@@ -12,7 +12,7 @@ sealed trait Expression extends AST
 
 sealed case class Reference(name: String) extends Expression
 
-sealed abstract class Literal[T](val value:T) extends Expression
+sealed abstract class Literal[+T](val value:T) extends Expression
 
 sealed case class DoubleLiteral(v:Double) extends Literal[Double](v)
 sealed case class IntLiteral(v:Long) extends Literal[Long](v)
@@ -30,4 +30,7 @@ sealed case class Divide(left: Expression, right:Expression) extends Binary(left
 sealed case class Or(left: Expression, right:Expression) extends Binary(left,right)
 sealed case class And(left: Expression, right:Expression) extends Binary(left,right)
 
+sealed case class ArgList(args:List[Reference]) extends AST
+sealed case class DefArgList(args:List[(Reference,Literal[_])]) extends AST
 
+sealed case class FunctionDef(name: String, args:ArgList, defaults: Option[DefArgList], body:Block) extends Statement
