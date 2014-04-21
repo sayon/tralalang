@@ -55,6 +55,13 @@ class ParserTests {
     implicit val sym = p.statement
     check("fun myFun(firstArg, secondArg) { x := 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
     check("fun myFun(){ x := 4 + firstArg }", "FunctionDef(myFun,ArgList(List()),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
-    check("fun myFun(firstArg, secondArg)(z@4, q@6){ x := q + 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
+    check("fun myFun(firstArg, secondArg)(z@4, q@6){ x := q + 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),Some(DefArgList(List((Reference(z),IntLiteral(4)), (Reference(q),IntLiteral(6))))),Block(Assignment(Reference(x),Plus(Plus(Reference(q),IntLiteral(4)),Reference(firstArg)))))")
+  }
+
+  @Test
+  def tuple() = {
+    implicit val sym = p.statement
+    check("x := 4; [x+ 4, y + 2, 9 +2 * 4, false ]", "Sequence(Assignment(Reference(x),IntLiteral(4)),Tuple(List(Plus(Reference(x),IntLiteral(4)), Plus(Reference(y),IntLiteral(2)), Plus(IntLiteral(9),Times(IntLiteral(2),IntLiteral(4))), FalseLiteral)))")
+
   }
 }

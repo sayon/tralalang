@@ -8,7 +8,7 @@ sealed case class Block(contents:Statement) extends Statement
 sealed case class Assignment(v:Reference, e:Expression) extends Statement
 sealed case class Scope(s:Statement) extends Statement
 
-sealed trait Expression extends AST
+sealed trait Expression extends Statement
 
 sealed case class Reference(name: String) extends Expression
 
@@ -20,6 +20,7 @@ sealed case class StringLiteral(v:String) extends Literal[String](v)
 case object TrueLiteral extends Literal[Boolean](true)
 case object FalseLiteral extends Literal[Boolean](false)
 
+sealed case class Tuple(contents:List[Expression]) extends Expression
 
 sealed abstract class Binary(left:Expression, right:Expression) extends Expression
 
