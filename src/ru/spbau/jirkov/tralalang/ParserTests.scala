@@ -54,5 +54,7 @@ class ParserTests {
   def functionDef() = {
     implicit val sym = p.statement
     check("fun myFun(firstArg, secondArg) { x := 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
+    check("fun myFun(){ x := 4 + firstArg }", "FunctionDef(myFun,ArgList(List()),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
+    check("fun myFun(firstArg, secondArg)(z@4, q@6){ x := q + 4 + firstArg }", "FunctionDef(myFun,ArgList(List(Reference(firstArg), Reference(secondArg))),None,Block(Assignment(Reference(x),Plus(IntLiteral(4),Reference(firstArg)))))")
   }
 }

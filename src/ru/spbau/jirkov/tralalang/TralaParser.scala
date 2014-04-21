@@ -10,7 +10,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val trueLiteral: PackratParser[Literal[Boolean]] = "true" ^^ (_ => TrueLiteral)
   lazy val falseLiteral: PackratParser[Literal[Boolean]] = "false" ^^ (_ => FalseLiteral)
 
-  lazy val liter: PackratParser[Expression] = trueLiteral | falseLiteral | real | integer
+  lazy val liter: PackratParser[Literal[_]] = trueLiteral | falseLiteral | real | integer
   lazy val ref = ident ^^ (s => Reference(s))
 
   lazy val sum : PackratParser[Expression] = (sum ~ ("+" ~> fact)) ^^ {case x~y => Plus(x,y)} |
@@ -35,10 +35,12 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     case l ~ r => Sequence(l, r)
   }
 
-  lazy val argList:PackratParser[ArgList] = "(" ~> repsep( ident, ",") <~ ")" ^^ {
-    case lst => ArgList(lst map Reference )
-  }
-  lazy val functionDef: PackratParser[FunctionDef] = "fun" ~> ident ~ argList ~ block ^^ {
-    case name ~ args ~ body => FunctionDef(name, args, null, body)
+  lazy val argDef: PackratParser[(Reference, Literal[_])] = ref ~ ("@" ~> liter) ^^ { case r ~ l => (r,l) }
+  lazy val argList:PackratParser[ArgList] = "(" ~> repsep( ref, ",") <~ ")" ^^ ArgList
+
+  lazy val defArgList:PackratParser[DefArgList] = ("(" ~> repsep( argDef, ",") <~ ")" ) ^^ DefArgList
+
+  lazy val functionDef: PackratParser[FunctionDef] = "fun" ~> ident ~ argList ~ defArgList.? ~ block ^^ {
+    case name ~ args ~ defs ~ body => FunctionDef(name, args, defs, body)
   }
 }
