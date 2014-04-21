@@ -20,4 +20,9 @@ class InterpreterTest {
   def block() = {
     assertEquals("x -> I(5)", launchStatus("x := 4; { x := 5; y := 4 }"))
   }
+
+  @Test
+  def tuple() = {
+    assertEquals("y -> S(List(_|_, I(4), I(2), B(true)))", launchStatus("y := [x, 4, 2, true]"))
+  }
 }

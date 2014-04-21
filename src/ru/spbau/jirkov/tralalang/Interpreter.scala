@@ -12,6 +12,8 @@ class Interpreter(startNode: AST) {
 
   sealed case class B(value: Boolean) extends Value
 
+  sealed case class S(contents:List[Value]) extends Value
+
   case object `_|_` extends Value
 
   case object U extends Value
@@ -35,6 +37,7 @@ class Interpreter(startNode: AST) {
     case TrueLiteral => B(value = true)
     case FalseLiteral => B(value = false)
     case Reference(name) => Handler.state.getVar(name)
+    case Tuple(contents) => S(contents.map(e => Handler(e)))
   }
 
   Handler defImpl {
