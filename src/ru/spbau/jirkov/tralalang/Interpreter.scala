@@ -41,6 +41,7 @@ class Interpreter(startNode: AST) {
     case FalseLiteral => B(value = false)
     case Reference(name) => Handler.state.getVar(name)
     case Tuple(contents) => S(contents.map(e => Handler(e)))
+    case Skip => U
 
     case TupleAccess(t, i) => (Handler(t), Handler(i)) match {
       case (S(lst), I(i))=>  lst(i.toInt)

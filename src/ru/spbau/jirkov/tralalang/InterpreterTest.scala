@@ -44,4 +44,9 @@ class InterpreterTest {
   def compare() = {
     assertEquals("", "")
   }
+
+  @Test
+  def skip() = {
+    assertEquals("x -> I(2)", launchStatus("x := { 1; 2 }"))
+  }
 }

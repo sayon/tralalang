@@ -1,14 +1,14 @@
 package ru.spbau.jirkov.tralalang
 
 sealed trait AST
-sealed trait Statement extends AST
+sealed trait Statement extends Expression
 
-sealed case class Sequence(fst:Statement, snd:Statement) extends Statement
-sealed case class Block(contents:Statement) extends Statement
+sealed case class Sequence(fst:Expression, snd:Expression) extends Statement
+sealed case class Block(contents: Expression ) extends Statement
 sealed case class Assignment(v:Reference, e:Expression) extends Statement
-sealed case class Scope(s:Statement) extends Statement
+case object Skip extends Statement
 
-sealed trait Expression extends Statement
+sealed trait Expression extends AST
 
 sealed case class Reference(name: String) extends Expression
 
@@ -22,7 +22,7 @@ case object FalseLiteral extends Literal[Boolean](false)
 
 sealed case class Tuple(contents:List[Expression]) extends Expression
 sealed case class TupleAccess(tuple:Expression, idx: Expression) extends Expression
-sealed case class TupleStore(tuple:Expression, idx: Expression, value: Statement) extends Expression
+sealed case class TupleStore(tuple:Expression, idx: Expression, value: Expression) extends Expression
 
 sealed abstract class Binary(left:Expression, right:Expression) extends Expression
 
