@@ -4,9 +4,11 @@ import org.junit._
 import Assert._
 class InterpreterTest {
   val parser = new TralaParser
-  def launchStatus(program:String) : String = {
-    new Interpreter( parser.parseAll(parser.statement, program).get ).state.vars.trim.replace("\n","$")
+
+  def launchStatus(program: String): String = {
+    new Interpreter(parser.parseAll(parser.statement, program).get).state.vars.trim.replace("\n", "$")
   }
+  
   @Test
   def assignment() = {
     assertEquals("x -> I(4)", launchStatus("x := 4"))
@@ -33,4 +35,8 @@ class InterpreterTest {
       """y -> B(true)$x -> S(List(I(4), B(true), I(2)))""", launchStatus("x := [4, true, 2] ; y := x -> 1"))
   }
 
+  @Test
+  def tupleStore() = {
+    assertEquals("", launchStatus("x := [0,1,2,3]; x !! 0 := (665 + 1)"))
+  }
 }

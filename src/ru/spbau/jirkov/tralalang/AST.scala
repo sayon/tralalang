@@ -33,6 +33,15 @@ sealed case class Divide(left: Expression, right:Expression) extends Binary(left
 sealed case class Or(left: Expression, right:Expression) extends Binary(left,right)
 sealed case class And(left: Expression, right:Expression) extends Binary(left,right)
 
+sealed case class Equals(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class Greater(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class GreaterOrEquals(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class Less(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class LessOrEquals(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class Not(left:Expression, right:Expression) extends Binary(left,right)
+sealed case class NotEquals(left:Expression, right:Expression) extends Binary(left,right)
+
+
 sealed case class ArgList(args:List[Reference]) extends AST
 sealed case class DefArgList(args:List[(Reference,Literal[_])]) extends AST
 

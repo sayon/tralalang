@@ -84,4 +84,14 @@ class ParserTests {
     implicit val sym = p.statement
     check("x := [0,1,2,3]; x !! 0 := (665 + 1)", "Sequence(Assignment(Reference(x),Tuple(List(IntLiteral(0), IntLiteral(1), IntLiteral(2), IntLiteral(3)))),TupleStore(Reference(x),IntLiteral(0),Plus(IntLiteral(665),IntLiteral(1))))")
   }
+
+  @Test
+  def compare() = {
+    implicit val sym = p.expr
+    check(" x + 1 > 4 * 2 + (3 + 2)", "Greater(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
+    check(" x + 1 < 4 * 2 + (3 + 2)", "Less(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
+    check(" x + 1 == 4 * 2 + (3 + 2)", "Equals(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
+    check(" x + 1 >= 4 * 2 + (3 + 2)", "GreaterOrEquals(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
+    check(" x + 1 <= 4 * 2 + (3 + 2)", "LessOrEquals(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
+  }
 }

@@ -46,6 +46,9 @@ class Interpreter(startNode: AST) {
       case (S(lst), I(i))=>  lst(i.toInt)
       case _ => throw new TypeException
     }
+    case TupleStore(t, i, v) => (Handler(t),Handler(i),Handler(v)) match {
+      case (s@S(t), I(i), v ) => S(t.updated(i.toInt, v))
+    }
 
   }
 
