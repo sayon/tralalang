@@ -13,12 +13,17 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val liter: PackratParser[Literal[_]] = trueLiteral | falseLiteral | real | integer
   lazy val ref = ident ^^ (s => Reference(s))
 
-  lazy val sum : PackratParser[Expression] = (sum ~ ("+" ~> fact)) ^^ {case x~y => Plus(x,y)} |
-    (sum ~ ("-" ~> fact)) ^^ {case x~y => Minus(x,y)} | fact
-  lazy val fact: PackratParser[Expression] = (sum ~ ("*" ~> liter)) ^^ {case x~y => Times(x,y)} |
-    (sum ~ ("/" ~> liter)) ^^ {case x~y => Divide(x,y)} | "(" ~> sum <~ ")" | liter | ref | tuple
   lazy val expr: PackratParser[Expression] = (expr ~ ("&&" ~> sum)) ^^ {case x~y => And(x,y)} |
     (expr ~ ("||" ~> sum)) ^^ {case x~y => Or(x,y)} | sum
+
+  lazy val sum : PackratParser[Expression] = (sum ~ ("+" ~> fact)) ^^ {case x~y => Plus(x,y)} |
+    (sum ~ ("-" ~> fact)) ^^ {case x~y => Minus(x,y)} | fact
+
+  lazy val fact: PackratParser[Expression] = (fact ~ ("*" ~> atom)) ^^ {case x~y => Times(x,y)} |
+    (fact ~ ("/" ~> atom)) ^^ {case x~y => Divide(x,y)} | atom
+
+  lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | liter | ref | tuple
+
 
   lazy val tuple: PackratParser[Tuple] = "[" ~> repsep(expr, ",") <~ "]" ^^ Tuple
 
@@ -28,7 +33,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
 
   lazy val block: PackratParser[Block] = "{" ~> statement <~ "}" ^^ Block
 
-  lazy val statement: PackratParser[Statement] = block | sequence | assignment | functionDef | expr
+  lazy val statement: PackratParser[Statement] =  block | sequence | functionDef | assignment | expr
 
   lazy val sequence: PackratParser[Sequence] = statement ~ (";" ~> statement )^^ {
     case l ~ r => Sequence(l, r)

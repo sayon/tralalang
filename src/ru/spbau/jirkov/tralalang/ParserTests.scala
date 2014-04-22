@@ -12,6 +12,11 @@ class ParserTests {
   }
 
   @Test
+  def sequence() = {
+    implicit val sym = p.statement
+    check( "x := 4; y := 2", "Sequence(Assignment(Reference(x),IntLiteral(4)),Assignment(Reference(y),IntLiteral(2)))")
+  }
+  @Test
   def block() = {
     implicit val sym = p.statement
     check("x := 3 + 2; {x := 4}", "Sequence(Assignment(Reference(x),Plus(IntLiteral(3),IntLiteral(2))),Block(Assignment(Reference(x),IntLiteral(4))))")
