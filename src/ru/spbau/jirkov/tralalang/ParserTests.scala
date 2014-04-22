@@ -14,8 +14,9 @@ class ParserTests {
   @Test
   def sequence() = {
     implicit val sym = p.statement
-    check( "x := 4; y := 2", "Sequence(Assignment(Reference(x),IntLiteral(4)),Assignment(Reference(y),IntLiteral(2)))")
+    check("x := 4; y := 2", "Sequence(Assignment(Reference(x),IntLiteral(4)),Assignment(Reference(y),IntLiteral(2)))")
   }
+
   @Test
   def block() = {
     implicit val sym = p.statement
@@ -73,8 +74,14 @@ class ParserTests {
   @Test
   def tupleAccess() = {
     implicit val sym = p.statement
-    check("y := [4,3,2] -> x + 1" , "Assignment(Reference(y),TupleAccess(Tuple(List(IntLiteral(4), IntLiteral(3), IntLiteral(2))),Plus(Reference(x),IntLiteral(1))))")
+    check("y := [4,3,2] -> x + 1", "Assignment(Reference(y),TupleAccess(Tuple(List(IntLiteral(4), IntLiteral(3), IntLiteral(2))),Plus(Reference(x),IntLiteral(1))))")
     check("y := 4 -> 1", "Assignment(Reference(y),TupleAccess(IntLiteral(4),IntLiteral(1)))")
     check("y := (4 + 3 + 2 ) -> 4 + 9", "Assignment(Reference(y),TupleAccess(Plus(Plus(IntLiteral(4),IntLiteral(3)),IntLiteral(2)),Plus(IntLiteral(4),IntLiteral(9))))")
+  }
+
+  @Test
+  def tupleStore() = {
+    implicit val sym = p.statement
+    check("x := [0,1,2,3]; x !! 0 := (665 + 1)", "Sequence(Assignment(Reference(x),Tuple(List(IntLiteral(0), IntLiteral(1), IntLiteral(2), IntLiteral(3)))),TupleStore(Reference(x),IntLiteral(0),Plus(IntLiteral(665),IntLiteral(1))))")
   }
 }
