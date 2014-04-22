@@ -21,6 +21,8 @@ case object TrueLiteral extends Literal[Boolean](true)
 case object FalseLiteral extends Literal[Boolean](false)
 
 sealed case class Tuple(contents:List[Expression]) extends Expression
+sealed case class TupleAccess(tuple:Expression, idx: Expression) extends Expression
+sealed case class TupleStore(tuple:Expression, idx: Expression, value: Statement) extends Statement
 
 sealed abstract class Binary(left:Expression, right:Expression) extends Expression
 

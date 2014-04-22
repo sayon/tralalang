@@ -19,6 +19,9 @@ class Interpreter(startNode: AST) {
   case object U extends Value
 
 
+  class InterpreterException extends Throwable
+  class TypeException extends InterpreterException
+
   object Handler extends MultiMethodWithState[AST, Value, InterpreterState]({
     throw new NotImplementedError("Unsupported node type!")
     U
@@ -38,6 +41,12 @@ class Interpreter(startNode: AST) {
     case FalseLiteral => B(value = false)
     case Reference(name) => Handler.state.getVar(name)
     case Tuple(contents) => S(contents.map(e => Handler(e)))
+
+    case TupleAccess(t, i) => (Handler(t), Handler(i)) match {
+      case (S(lst), I(i))=>  lst(i.toInt)
+      case _ => throw new TypeException
+    }
+
   }
 
   Handler defImpl {

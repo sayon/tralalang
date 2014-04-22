@@ -5,7 +5,7 @@ import Assert._
 class InterpreterTest {
   val parser = new TralaParser
   def launchStatus(program:String) : String = {
-    new Interpreter( parser.parseAll(parser.statement, program).get ).state.vars
+    new Interpreter( parser.parseAll(parser.statement, program).get ).state.vars.trim.replace("\n","$")
   }
   @Test
   def assignment() = {
@@ -25,4 +25,12 @@ class InterpreterTest {
   def tuple() = {
     assertEquals("y -> S(List(_|_, I(4), I(2), B(true)))", launchStatus("y := [x, 4, 2, true]"))
   }
+
+  @Test
+  def tupleAccess() = {
+    assertEquals("res -> I(2)", launchStatus("res := [x, 4, 2, true] -> 2"))
+    assertEquals(
+      """y -> B(true)$x -> S(List(I(4), B(true), I(2)))""", launchStatus("x := [4, true, 2] ; y := x -> 1"))
+  }
+
 }

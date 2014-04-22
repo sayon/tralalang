@@ -69,4 +69,12 @@ class ParserTests {
     check("x := 4; [x+ 4, y + 2, 9 +2 * 4, false ]", "Sequence(Assignment(Reference(x),IntLiteral(4)),Tuple(List(Plus(Reference(x),IntLiteral(4)), Plus(Reference(y),IntLiteral(2)), Plus(IntLiteral(9),Times(IntLiteral(2),IntLiteral(4))), FalseLiteral)))")
 
   }
+
+  @Test
+  def tupleAccess() = {
+    implicit val sym = p.statement
+    check("y := [4,3,2] -> x + 1" , "Assignment(Reference(y),TupleAccess(Tuple(List(IntLiteral(4), IntLiteral(3), IntLiteral(2))),Plus(Reference(x),IntLiteral(1))))")
+    check("y := 4 -> 1", "Assignment(Reference(y),TupleAccess(IntLiteral(4),IntLiteral(1)))")
+    check("y := (4 + 3 + 2 ) -> 4 + 9", "Assignment(Reference(y),TupleAccess(Plus(Plus(IntLiteral(4),IntLiteral(3)),IntLiteral(2)),Plus(IntLiteral(4),IntLiteral(9))))")
+  }
 }
