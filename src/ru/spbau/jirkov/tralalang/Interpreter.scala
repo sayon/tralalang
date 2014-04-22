@@ -79,6 +79,26 @@ class Interpreter(startNode: AST) {
     }
   }
 
+  protected object Util {
+    def normalize(l:Value, r:Value) : Either[(Double,Double),(Long,Long)] = (l,r) match {
+      case (D(l), D(r)) => Left((l.toDouble,r.toDouble))
+      case (D(l), I(r)) => Left((l.toDouble, r.toDouble))
+      case (I(l), D(r)) => Left((l.toDouble, r.toDouble))
+      case (I(l), I(r)) => Right((l, r))
+    }
+    def compare(l:Value, r:Value) : Int = normalize(l,r) match {
+      case Right((l,r)) => l compareTo r
+      case Left((l,r)) => l compareTo r
+    }
+  }
+  Handler defImpl {
+    case Less(l,r) => B(Util.compare(Handler(l),Handler(r)) == -1)
+    case LessOrEquals(l,r) => B(Util.compare(Handler(l),Handler(r)) <= 0)
+    case Equals(l,r) => B(Util.compare(Handler(l),Handler(r)) == 0)
+    case NotEquals(l,r) => B(Util.compare(Handler(l),Handler(r)) != 0)
+    case GreaterOrEquals(l,r) => B(Util.compare(Handler(l),Handler(r)) >= 0)
+    case Greater(l,r) => B(Util.compare(Handler(l),Handler(r)) == 1)
+  }
 
   class InterpreterState {
 

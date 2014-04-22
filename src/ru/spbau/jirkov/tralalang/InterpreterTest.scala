@@ -8,7 +8,7 @@ class InterpreterTest {
   def launchStatus(program: String): String = {
     new Interpreter(parser.parseAll(parser.statement, program).get).state.vars.trim.replace("\n", "$")
   }
-  
+
   @Test
   def assignment() = {
     assertEquals("x -> I(4)", launchStatus("x := 4"))
@@ -37,6 +37,11 @@ class InterpreterTest {
 
   @Test
   def tupleStore() = {
-    assertEquals("", launchStatus("x := [0,1,2,3]; x !! 0 := (665 + 1)"))
+    assertEquals("x -> S(List(I(666), I(1), I(2), I(3)))", launchStatus("x := [0,1,2,3];  x := x !! 0 := (665 + 1)"))
+  }
+
+  @Test
+  def compare() = {
+    assertEquals("", "")
   }
 }

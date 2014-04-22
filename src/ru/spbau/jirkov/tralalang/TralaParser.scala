@@ -28,11 +28,14 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val sum : PackratParser[Expression] = (sum ~ ("+" ~> fact)) ^^ {case x~y => Plus(x,y)} |
     (sum ~ ("-" ~> fact)) ^^ {case x~y => Minus(x,y)} | fact
 
-  lazy val fact: PackratParser[Expression] = (fact ~ ("*" ~> atom)) ^^ {case x~y => Times(x,y)} |
-    (fact ~ ("/" ~> atom)) ^^ {case x~y => Divide(x,y)} | atom
+  lazy val fact: PackratParser[Expression] = (fact ~ ("*" ~> tupleMutation)) ^^ {case x~y => Times(x,y)} |
+    (fact ~ ("/" ~> tupleMutation)) ^^ {case x~y => Divide(x,y)} | tupleMutation
+
+  lazy val tupleMutation : PackratParser[Expression] = tupleMutation ~ ("!!" ~> atom <~ ":=") ~ atom ^^ {
+    case t ~ i ~ v => TupleStore(t,i,v)
+  } | atom
 
   lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | liter | ref | tuple
-
 
   lazy val tuple: PackratParser[Tuple] = "[" ~> repsep(expr, ",") <~ "]" ^^ Tuple
 
@@ -42,7 +45,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
 
   lazy val block: PackratParser[Block] = "{" ~> statement <~ "}" ^^ Block
 
-  lazy val statement: PackratParser[Statement] =  block | sequence | functionDef | tupleStore | assignment | expr
+  lazy val statement: PackratParser[Statement] =  block | sequence | functionDef  | assignment | expr
 
   lazy val tupleStore: PackratParser[TupleStore] = expr ~ ("!!" ~> expr <~ ":=") ~ expr ^^ {
     case t ~ i ~ v => TupleStore(t,i,v)
