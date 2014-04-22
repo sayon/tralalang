@@ -26,7 +26,7 @@ class Interpreter(startNode: AST) {
 
   Handler defImpl {
     case Assignment(v, e) => val computedValue = Handler(e); Handler.state.setVar(v.name, computedValue); computedValue
-    case Sequence(l, r) => Handler(l); Handler(r)
+    case Sequence(l) => l.map(Handler(_)).last
     case Block(s) => Handler.state.pushContext(); val r = Handler(s); Handler.state.popContext(); r
   }
 

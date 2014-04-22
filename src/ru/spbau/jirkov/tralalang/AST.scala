@@ -3,7 +3,7 @@ package ru.spbau.jirkov.tralalang
 sealed trait AST
 sealed trait Statement extends AST
 
-sealed case class Sequence(before: Statement, after:Statement) extends Statement
+sealed case class Sequence(lst:List[Statement]) extends Statement
 sealed case class Block(contents:Statement) extends Statement
 sealed case class Assignment(v:Reference, e:Expression) extends Statement
 sealed case class Scope(s:Statement) extends Statement
