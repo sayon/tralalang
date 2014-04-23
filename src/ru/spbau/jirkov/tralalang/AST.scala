@@ -45,4 +45,9 @@ sealed case class NotEquals(left:Expression, right:Expression) extends Binary(le
 sealed case class ArgList(args:List[Reference]) extends AST
 sealed case class DefArgList(args:List[(Reference,Literal[_])]) extends AST
 
-sealed case class FunctionDef(name: String, args:ArgList, defaults: Option[DefArgList], body:Block) extends Statement
+sealed case class FunctionDef(name: String, args:ArgList, defaults: Option[DefArgList], body:Expression) extends Statement
+abstract class FunctionCallOrPredef extends Expression
+abstract class PredefFunction extends FunctionCallOrPredef
+sealed case class FunctionCall(name:String, args:List[Expression]) extends FunctionCallOrPredef
+
+sealed case class PrintLn(args:List[Expression]) extends PredefFunction

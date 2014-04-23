@@ -94,4 +94,10 @@ class ParserTests {
     check(" x + 1 >= 4 * 2 + (3 + 2)", "GreaterOrEquals(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
     check(" x + 1 <= 4 * 2 + (3 + 2)", "LessOrEquals(Plus(Reference(x),IntLiteral(1)),Plus(Times(IntLiteral(4),IntLiteral(2)),Plus(IntLiteral(3),IntLiteral(2))))")
   }
+
+  @Test
+  def predefFunctions() = {
+    implicit val sym = p.statement
+    check("println(4)", "PrintLn(List(IntLiteral(4)))")
+  }
 }

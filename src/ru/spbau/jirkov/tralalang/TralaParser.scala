@@ -35,7 +35,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     case t ~ i ~ v => TupleStore(t,i,v)
   } | atom
 
-  lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | liter | ref | tuple | statement
+  lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | liter | funCall | ref | tuple | statement
 
   lazy val tuple: PackratParser[Tuple] = "[" ~> repsep(expr, ",") <~ "]" ^^ Tuple
 
@@ -54,12 +54,20 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     case l ~ r => Sequence(l, r)
   }
 
+  lazy val funCall: PackratParser[FunctionCallOrPredef] = ident ~ ( "("~>repsep(expr, ",") <~")" ) ^^ defaultFunctions.orElse {
+    case n ~ args => FunctionCall(n, args)
+  }
+
+  val defaultFunctions : PartialFunction[~[String, List[Expression]], PredefFunction] = {
+    case "println" ~ args => PrintLn(args)
+  }
+
   lazy val argDef: PackratParser[(Reference, Literal[_])] = ref ~ ("@" ~> liter) ^^ { case r ~ l => (r,l) }
   lazy val argList:PackratParser[ArgList] = "(" ~> repsep( ref, ",") <~ ")" ^^ ArgList
 
   lazy val defArgList:PackratParser[DefArgList] = ("(" ~> repsep( argDef, ",") <~ ")" ) ^^ DefArgList
 
-  lazy val functionDef: PackratParser[FunctionDef] = "fun" ~> ident ~ argList ~ defArgList.? ~ block ^^ {
+  lazy val functionDef: PackratParser[FunctionDef] = "fun" ~> ident ~ argList ~ defArgList.? ~ statement ^^ {
     case name ~ args ~ defs ~ body => FunctionDef(name, args, defs, body)
   }
 }
