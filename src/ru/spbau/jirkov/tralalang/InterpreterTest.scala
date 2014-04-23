@@ -82,4 +82,24 @@ class InterpreterTest {
       """.stripMargin))
 
   }
+
+  @Test
+  def ifThenElse() = {
+    assertEquals("r -> I(1)$program -> F(FunctionDef(program,ArgList(List()),None,Assignment(Reference(r),IfThenElse(Greater(IntLiteral(4),IntLiteral(3)),IntLiteral(1),IntLiteral(0)))))",
+    launchStatus(
+      """
+        |r := if (4 > 3) 1 else 0
+      """.stripMargin)
+    )
+  }
+
+  @Test
+  def whil() = {
+    assertEquals("x -> I(3)$r -> I(3)$program -> F(FunctionDef(program,ArgList(List()),None,Sequence(Assignment(Reference(x),IntLiteral(1)),Assignment(Reference(r),While(Less(Reference(x),IntLiteral(3)),Block(Assignment(Reference(x),Plus(Reference(x),IntLiteral(1)))))))))",
+    launchStatus(
+      """
+        |x := 1;
+        |r := while ( x < 3 ) { x:= x + 1 }
+      """.stripMargin))
+  }
 }

@@ -100,4 +100,26 @@ class ParserTests {
     implicit val sym = p.statement
     check("println(4)", "PrintLn(List(IntLiteral(4)))")
   }
+
+
+  @Test
+  def ifThenElse() = {
+    implicit val sym = p.statement
+    check(
+      """
+        |r := if (4 > 3) 1 else 0
+      """.stripMargin,
+      "Assignment(Reference(r),IfThenElse(Greater(IntLiteral(4),IntLiteral(3)),IntLiteral(1),IntLiteral(0)))")
+  }
+
+  @Test
+  def whil() = {
+    implicit val sym = p.statement
+    check(
+      """
+        |x := 1;
+        |r := while ( x < 3 ) { x:= x + 1 }
+      """.stripMargin,
+      "Sequence(Assignment(Reference(x),IntLiteral(1)),Assignment(Reference(r),While(Less(Reference(x),IntLiteral(3)),Block(Assignment(Reference(x),Plus(Reference(x),IntLiteral(1)))))))")
+  }
 }

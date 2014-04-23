@@ -51,3 +51,6 @@ abstract class PredefFunction extends FunctionCallOrPredef
 sealed case class FunctionCall(name:String, args:List[Expression]) extends FunctionCallOrPredef
 
 sealed case class PrintLn(args:List[Expression]) extends PredefFunction
+
+sealed case class IfThenElse(cond:Expression, yes:Expression, no:Expression) extends Expression
+sealed case class While(cond:Expression, body:Expression) extends Statement

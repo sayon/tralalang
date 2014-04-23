@@ -35,7 +35,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     case t ~ i ~ v => TupleStore(t,i,v)
   } | atom
 
-  lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | liter | funCall | ref | tuple | statement
+  lazy val atom: PackratParser[Expression] = "(" ~> expr <~ ")" | ifThenElse | whil | liter | funCall | ref | tuple | statement
 
   lazy val tuple: PackratParser[Tuple] = "[" ~> repsep(expr, ",") <~ "]" ^^ Tuple
 
@@ -46,6 +46,15 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val block: PackratParser[Block] = "{" ~> statement <~ "}" ^^ Block
 
   lazy val statement: PackratParser[Expression] =  block | sequence | functionDef  | assignment | skip | expr
+
+  lazy val ifThenElse: PackratParser[IfThenElse] = (("if" ~ "(") ~> expr <~ ")") ~ statement ~ ("else" ~> statement).? ^^ {
+    case cond ~ yes ~ Some(no) => IfThenElse(cond, yes, no)
+    case cond ~ yes ~ None => IfThenElse(cond, yes, Skip)
+  }
+  lazy val whil: PackratParser[While] = ("while" ~ "(" ~> expr <~")") ~ expr ^^ {
+    case cond ~ body => While(cond,body)
+  }
+
 
   lazy val skip : PackratParser[Skip.type] = "_" ^^ { _ => Skip }
 
