@@ -2,7 +2,7 @@ package ru.spbau.jirkov.tralalang
 
 import scala.collection.mutable
 
-class Interpreter(startNode: AST) {
+class Interpreter(startNode: Expression) {
 
   abstract class Value
 
@@ -54,7 +54,6 @@ class Interpreter(startNode: AST) {
     }
 
     case f:FunctionDef  => val v = F(f); Handler.state.setVar(f.name, v ); v
-
   }
 
   Handler defImpl {
@@ -95,6 +94,13 @@ class Interpreter(startNode: AST) {
       case Right((l,r)) => l compareTo r
       case Left((l,r)) => l compareTo r
     }
+    def formArguments(c: FunctionCall, f:FunctionDef): List[(Reference,Value)] = {
+      val defs = f.defaults match {
+        case None => Nil
+        case Some(defs) => defs.args.map( p => (p._1, Handler(p._2)) )
+      }
+      f.args.args.zip(c.args.map(Handler(_)) ++ List.fill(f.args.args.length)({`_|_`})) ++ defs
+    }
   }
   Handler defImpl {
     case Less(l,r) => B(Util.compare(Handler(l),Handler(r)) == -1)
@@ -103,6 +109,22 @@ class Interpreter(startNode: AST) {
     case NotEquals(l,r) => B(Util.compare(Handler(l),Handler(r)) != 0)
     case GreaterOrEquals(l,r) => B(Util.compare(Handler(l),Handler(r)) >= 0)
     case Greater(l,r) => B(Util.compare(Handler(l),Handler(r)) == 1)
+  }
+
+  Handler defImpl {
+    case c@FunctionCall(name, args) =>
+      Handler.state.pushContext()
+      val called = Handler.state.getVar(name)
+      val res = called match {
+        case F(f) =>
+          Util.formArguments(c, f).foreach(p => Handler.state.setVar(p._1.name, p._2))
+          Handler(f.body)
+        case _ => throw new TypeException
+      }
+      Handler.state.popContext()
+      res
+
+    case PrintLn(args) => args.foreach( a => println(ValuePrinter(Handler(a)))); U
   }
 
   class InterpreterState {
@@ -151,5 +173,17 @@ class Interpreter(startNode: AST) {
 
   def state = Handler.state
 
+  Handler.state.setVar("program", F(new FunctionDef("program",ArgList(Nil),None, startNode)))
   Handler(startNode)
+
+  object ValuePrinter extends MultiMethod[Interpreter#Value, String]({"<Unknown value type>"}) {
+    defImpl {
+      case I(i) => i.toString
+      case D(d)=> d.toString
+      case S(contents) =>  "[" + contents.foldLeft("")((x,y) => x + this(y) ) + "]"
+      case `_|_` => "_|_"
+      case B(b) => b.toString
+      case F(f) => ASTPrinter(f)
+    }
+  }
 }
