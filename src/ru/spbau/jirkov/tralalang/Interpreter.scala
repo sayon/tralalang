@@ -14,6 +14,8 @@ class Interpreter(startNode: AST) {
 
   sealed case class S(contents:List[Value]) extends Value
 
+  sealed case class F(record:FunctionDef) extends Value
+
   case object `_|_` extends Value
 
   case object U extends Value
@@ -50,6 +52,8 @@ class Interpreter(startNode: AST) {
     case TupleStore(t, i, v) => (Handler(t),Handler(i),Handler(v)) match {
       case (s@S(t), I(i), v ) => S(t.updated(i.toInt, v))
     }
+
+    case f:FunctionDef  => val v = F(f); Handler.state.setVar(f.name, v ); v
 
   }
 

@@ -49,4 +49,9 @@ class InterpreterTest {
   def skip() = {
     assertEquals("x -> I(2)", launchStatus("x := { 1; 2 }"))
   }
+
+  @Test
+  def functionDef() = {
+    assertEquals("f -> F(FunctionDef(f,ArgList(List(Reference(x), Reference(y))),Some(DefArgList(List((Reference(z),IntLiteral(4))))),Block(Plus(Plus(Reference(x),Reference(y)),Reference(z)))))", launchStatus("fun f(x,y)(z@4){ x + y + z }"))
+  }
 }
