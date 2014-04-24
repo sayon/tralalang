@@ -29,6 +29,7 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
     (sum ~ ("-" ~> fact)) ^^ {case x~y => Minus(x,y)} | fact
 
   lazy val fact: PackratParser[Expression] = (fact ~ ("*" ~> tupleMutation)) ^^ {case x~y => Times(x,y)} |
+    (fact ~ ("%" ~> tupleMutation)) ^^ {case x~y => Rem(x,y)} |
     (fact ~ ("/" ~> tupleMutation)) ^^ {case x~y => Divide(x,y)} | tupleMutation
 
   lazy val tupleMutation : PackratParser[Expression] = tupleMutation ~ ("!!" ~> atom <~ ":=") ~ atom ^^ {

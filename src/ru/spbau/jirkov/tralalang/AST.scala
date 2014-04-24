@@ -32,6 +32,7 @@ sealed case class Times(left: Expression, right:Expression) extends Binary(left,
 sealed case class Divide(left: Expression, right:Expression) extends Binary(left,right)
 sealed case class Or(left: Expression, right:Expression) extends Binary(left,right)
 sealed case class And(left: Expression, right:Expression) extends Binary(left,right)
+sealed case class Rem(left:Expression, right:Expression) extends Binary(left,right)
 
 sealed case class Equals(left:Expression, right:Expression) extends Binary(left,right)
 sealed case class Greater(left:Expression, right:Expression) extends Binary(left,right)
