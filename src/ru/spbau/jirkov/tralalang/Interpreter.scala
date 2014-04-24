@@ -12,7 +12,8 @@ class Interpreter(startNode: Expression) {
 
   sealed case class B(value: Boolean) extends Value
 
-  sealed case class S(contents: List[Value]) extends Value
+  sealed case class S(str:String) extends Value
+  sealed case class L(contents: List[Value]) extends Value
 
   sealed case class F(record: FunctionDef) extends Value
 
@@ -43,15 +44,16 @@ class Interpreter(startNode: Expression) {
     case TrueLiteral => B(value = true)
     case FalseLiteral => B(value = false)
     case Reference(name) => Handler.state.getVar(name)
-    case Tuple(contents) => S(contents.map(e => Handler(e)))
+    case Tuple(contents) => L(contents.map(e => Handler(e)))
+    case StringLiteral(str) => S(str)
     case Skip => U
 
     case TupleAccess(t, i) => (Handler(t), Handler(i)) match {
-      case (S(lst), I(i)) => lst(i.toInt)
+      case (L(lst), I(i)) => lst(i.toInt)
       case _ => throw new TypeException
     }
     case TupleStore(t, i, v) => (Handler(t), Handler(i), Handler(v)) match {
-      case (s@S(t), I(i), v) => S(t.updated(i.toInt, v))
+      case (s@L(t), I(i), v) => L(t.updated(i.toInt, v))
     }
 
     case f: FunctionDef => val v = F(f); Handler.state.setVar(f.name, v); v
@@ -63,6 +65,7 @@ class Interpreter(startNode: Expression) {
       case (D(l), D(r)) => D(l + r)
       case (I(l), D(r)) => D(l + r)
       case (D(l), I(r)) => D(l + r)
+      case (S(l), S(r)) => S(l+r)
     }
     case Minus(l, r) => (Handler(l), Handler(r)) match {
       case (I(l), I(r)) => I(l - r)
@@ -119,7 +122,7 @@ class Interpreter(startNode: Expression) {
       case B(b) => b
       case I(i) => i != 0
       case D(d) => d != 0.0
-      case S(lst) => lst forall isTrue
+      case L(lst) => lst forall isTrue
     }
   }
 
@@ -211,10 +214,11 @@ class Interpreter(startNode: Expression) {
     defImpl {
       case I(i) => i.toString
       case D(d) => d.toString
-      case S(contents) => "[" + contents.foldLeft("")((x, y) => x + this(y)) + "]"
+      case L(contents) => "[" + contents.foldLeft("")((x, y) => x + this(y)) + "]"
       case `_|_` => "_|_"
       case B(b) => b.toString
       case F(f) => ASTPrinter(f)
+      case S(s) => s
     }
   }
 

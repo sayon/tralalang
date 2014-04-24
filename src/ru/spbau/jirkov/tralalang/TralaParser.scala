@@ -10,8 +10,9 @@ class TralaParser extends JavaTokenParsers with PackratParsers {
   lazy val trueLiteral: PackratParser[Literal[Boolean]] = "true" ^^ (_ => TrueLiteral)
   lazy val falseLiteral: PackratParser[Literal[Boolean]] = "false" ^^ (_ => FalseLiteral)
 
-  lazy val liter: PackratParser[Literal[_]] = trueLiteral | falseLiteral | real | integer
+  lazy val liter: PackratParser[Literal[_]] = trueLiteral | falseLiteral | real | integer | string
   lazy val ref = ident ^^ Reference
+  lazy val string = stringLiteral ^^ {s => StringLiteral(s.substring(1, s.length-1)) }
 
   lazy val expr: PackratParser[Expression] = expr ~ ("->" ~> exprB) ^^ { case t ~ i => TupleAccess(t,i) } | exprB
 

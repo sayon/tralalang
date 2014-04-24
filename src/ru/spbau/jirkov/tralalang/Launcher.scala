@@ -19,8 +19,9 @@ object Launcher extends App {
     |        };
     |   cur := cur + 1
     |};
-    |println( last_cur )
+    |println( "hey, ", last_cur )
   """.stripMargin
+
   val p = new TralaParser
   val parseResult = p.parseAll(p.statement, program)
   parseResult match {

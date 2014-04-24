@@ -18,6 +18,7 @@ object ASTPrinter extends MultiMethod[AST, String]({
     case StringLiteral(s) => s
     case TrueLiteral => "true"
     case FalseLiteral => "false"
+    case StringLiteral(s) => "\"" + s + "\""
     case Reference(n) => n
     case Plus(l, r) => this(l) + " + " + this(r)
     case Minus(l, r) => this(l) + " + " + this(r)
