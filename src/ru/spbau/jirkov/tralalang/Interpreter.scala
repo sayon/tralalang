@@ -66,6 +66,7 @@ class Interpreter(startNode: Expression) {
       case (I(l), D(r)) => D(l + r)
       case (D(l), I(r)) => D(l + r)
       case (S(l), S(r)) => S(l+r)
+      case (L(l), L(r)) => L(l ++ r)
     }
     case Minus(l, r) => (Handler(l), Handler(r)) match {
       case (I(l), I(r)) => I(l - r)
